@@ -1,9 +1,14 @@
+import 'dart:developer';
+
+import 'package:app/constants/api_path.dart';
 import 'package:app/presentation/features/auth/register/user_model.dart';
 import 'package:app/presentation/features/customer/presentation/homeWithBottomBar.dart';
 import 'package:app/constants/app_constants.dart';
 import 'package:app/constants/colors.dart';
+import 'package:app/presentation/features/customer/presentation/shipments/create_shipments_screens.dart/model/shipments_model.dart';
 import 'package:app/presentation/shared/screens/presentation/notifications_screen.dart';
 import 'package:app/presentation/shared/screens/presentation/profile_screen.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,11 +25,73 @@ class Customerhomepage extends ConsumerStatefulWidget {
 class _CustomerhomepageState extends ConsumerState<Customerhomepage> {
   final List<String> onGoingShipments = [""];
   final List<String> pendingShipments = ["", "", ""];
+  bool isLoading = false;
+  String? errorMessage;
+  final Dio _dio = Dio();
+  List<Shipment> shipments = [];
+  Future<void> getshipments() async {
+    try {
+      final response = await _dio.get(
+        ApiPath.shipment,
+        options: Options(
+          headers: {
+            "Authorization":
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NjllMjgzZjFhMmRlMjNlNzk5NjUzYiIsImlhdCI6MTc1MjAzMjE2NSwiZXhwIjoxNzU0NjI0MTY1fQ.inV8FVSkDgCR-YI4-T11TGrbVBB3lOKxveoXi6hBP38",
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final shipmentsJson = response.data["data"]["shipments"];
+
+        if (shipmentsJson != null && shipmentsJson is List) {
+          List<Shipment> shipments =
+              shipmentsJson
+                  .map<Shipment>((json) => Shipment.fromJson(json))
+                  .toList();
+          for (var shipment in shipments) {
+            log("Shipment ID: ${shipment.id}");
+          }
+
+          setState(() {
+            this.shipments = shipments;
+            errorMessage = null;
+          });
+        } else {
+          setState(() {
+            errorMessage = "لا يوجد شحنات لعرضها";
+          });
+        }
+      } else {
+        setState(() {
+          errorMessage = "حدث خطأ أثناء تحميل الشحنات";
+        });
+      }
+    } catch (e) {
+      log("error: $e");
+      setState(() {
+        errorMessage = "فشل الاتصال بالخادم: ${e.toString()}";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getshipments();
+  }
 
   @override
   Widget build(BuildContext context) {
     // print(MediaQuery.of(context).size.width);
     // print(MediaQuery.of(context).size.height);
+
     final state = ref.watch(authenticatedUserProvider);
     return Scaffold(
       appBar: PreferredSize(
@@ -204,17 +271,29 @@ class _CustomerhomepageState extends ConsumerState<Customerhomepage> {
                     border: Border.all(color: AppColors.cardBorderColor),
                   ),
                   height: 160.h,
-                  child: ListView.builder(
-                    itemCount: onGoingShipments.length,
-                    itemBuilder: (context, index) {
-                      return homePageOnGoingShipmentCard(
-                        "القاهرة",
-                        "بغداد",
-                        50,
-                        "SH15325",
-                      );
-                    },
+                  child: Container(
+                    width: double.infinity,
+                    child: Center(
+                      child: Text(
+                        "لا يوجد شحنات جارية",
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
                   ),
+                  // ListView.builder(
+                  //   itemCount: onGoingShipments.length,
+                  //   itemBuilder: (context, index) {
+                  //     return homePageOnGoingShipmentCard(
+                  //       "القاهرة",
+                  //       "بغداد",
+                  //       50,
+                  //       "SH15325",
+                  //     );
+                  //   },
+                  // ),
                 ),
                 TextButton(
                   onPressed: () {
@@ -263,26 +342,41 @@ class _CustomerhomepageState extends ConsumerState<Customerhomepage> {
                     ),
                   ),
                   height: 150.h,
-                  child: ListView.builder(
-                    itemCount: pendingShipments.length,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          homePagePendingShipmentCard(
-                            "القاهرة",
-                            "بغداد",
-                            50,
-                            "SH15325",
+                  child:
+                      (shipments.isNotEmpty)
+                          ? ListView.builder(
+                            itemCount: shipments.length,
+                            itemBuilder: (context, index) {
+                              final shipment = shipments[index];
+                              return Column(
+                                children: [
+                                  homePagePendingShipmentCard(
+                                    shipment.origin.address,
+                                    shipment.destination.address,
+                                    50,
+                                    shipment.id,
+                                  ),
+                                  Divider(
+                                    indent: 30,
+                                    endIndent: 30,
+                                    color: AppColors.buttonColor.withAlpha(80),
+                                  ),
+                                ],
+                              );
+                            },
+                          )
+                          : SizedBox(
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                "لا يوجد شحنات معلقة",
+                                style: TextStyle(
+                                  color: AppColors.primaryColor,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
                           ),
-                          Divider(
-                            indent: 30,
-                            endIndent: 30,
-                            color: AppColors.buttonColor.withValues(alpha: 0.3),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
                 ),
               ],
             ),
@@ -410,14 +504,19 @@ class _CustomerhomepageState extends ConsumerState<Customerhomepage> {
             children: [
               Text(
                 end,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontSize: 15,
+                  color: AppColors.primaryColor,
+                ),
               ), // destination
               SizedBox(width: 5.w),
               Icon(Icons.arrow_back),
               SizedBox(width: 5.w),
               Text(
                 begin,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium!.copyWith(fontSize: 15),
               ), // source
             ],
           ),

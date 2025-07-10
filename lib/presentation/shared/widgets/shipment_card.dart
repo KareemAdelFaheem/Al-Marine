@@ -13,8 +13,20 @@ class ShipmentCard extends StatelessWidget {
   int id;
   bool isNew = false;
   bool isOngoing;
+  String fromCountry;
+  String fromCity;
+  String toCountry;
+  String toCity;
+  String date;
+  String shipmentId;
 
   ShipmentCard({
+    required this.date,
+    required this.fromCountry,
+    required this.fromCity,
+    required this.toCountry,
+    required this.toCity,
+    required this.shipmentId,
     this.isOngoing = true,
     required this.isNew,
     required this.id,
@@ -84,7 +96,9 @@ class ShipmentCard extends StatelessWidget {
                           isNew
                               ? Text(
                                 // status.title,
-                                "SHI-20321",
+                                "SH465854",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14.sp,
@@ -141,7 +155,7 @@ class ShipmentCard extends StatelessWidget {
                                 style: TextStyle(fontSize: 12.sp),
                               )
                               : Text(
-                                "SH465854",
+                                shipmentId,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14.sp,
@@ -181,7 +195,7 @@ class ShipmentCard extends StatelessWidget {
                     Text("بدأت الشحنة بيوم", style: TextStyle(fontSize: 14.sp)),
                     Row(
                       children: [
-                        Text("22/10/2018", style: TextStyle(fontSize: 14.sp)),
+                        Text(date, style: TextStyle(fontSize: 14.sp)),
                         // SizedBox(width: 8.w),
                         // const Text("–"),
                       ],
@@ -252,13 +266,13 @@ class ShipmentCard extends StatelessWidget {
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text(
-                          "مصر، القاهرة",
+                          "$fromCountry, $fromCity",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          "مصر، القاهرة",
+                          "$toCountry, $toCity",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],

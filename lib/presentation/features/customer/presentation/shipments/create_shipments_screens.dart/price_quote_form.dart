@@ -67,14 +67,14 @@ class _PricequoteformState extends State<Pricequoteform> {
 
           data: {
             "origin": {
-              "address": "Pickup Address",
+              "address": "الأسكندرية",
               "coordinates": {"lat": 40.7128, "lng": -74.0060},
-              "country": "USA",
+              "country": "مصر",
             },
             "destination": {
-              "address": "Delivery Address",
+              "address": "الرفاع",
               "coordinates": {"lat": 34.0522, "lng": -118.2437},
-              "country": "USA",
+              "country": "العراق",
             },
             "cargoDetails": {
               "description": "Electronics",

@@ -1,8 +1,11 @@
 import 'dart:developer';
 
+import 'package:app/constants/api_path.dart';
+import 'package:app/presentation/features/customer/presentation/shipments/create_shipments_screens.dart/model/shipments_model.dart';
 import 'package:app/presentation/shared/screens/models/shipment_status.dart';
 import 'package:app/constants/colors.dart';
 import 'package:app/presentation/shared/widgets/shipment_card.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,6 +24,60 @@ class ShipmentDataScreenToolBar extends StatefulWidget {
 }
 
 class _ShipmentDataScreenToolBarState extends State<ShipmentDataScreenToolBar> {
+  bool isLoading = false;
+  String? errorMessage;
+  final Dio _dio = Dio();
+  List<Shipment> retreivedShipments = [];
+  Future<void> getshipments() async {
+    try {
+      final response = await _dio.get(
+        ApiPath.shipment,
+        options: Options(
+          headers: {
+            "Authorization":
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NjllMjgzZjFhMmRlMjNlNzk5NjUzYiIsImlhdCI6MTc1MjAzMjE2NSwiZXhwIjoxNzU0NjI0MTY1fQ.inV8FVSkDgCR-YI4-T11TGrbVBB3lOKxveoXi6hBP38",
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final shipmentsJson = response.data["data"]["shipments"];
+
+        if (shipmentsJson != null && shipmentsJson is List) {
+          List<Shipment> shipments =
+              shipmentsJson
+                  .map<Shipment>((json) => Shipment.fromJson(json))
+                  .toList();
+          for (var shipment in shipments) {
+            log("Shipment ID: ${shipment.id}");
+          }
+
+          setState(() {
+            retreivedShipments = shipments;
+            errorMessage = null;
+          });
+        } else {
+          setState(() {
+            errorMessage = "لا يوجد شحنات لعرضها";
+          });
+        }
+      } else {
+        setState(() {
+          errorMessage = "حدث خطأ أثناء تحميل الشحنات";
+        });
+      }
+    } catch (e) {
+      log("error: $e");
+      setState(() {
+        errorMessage = "فشل الاتصال بالخادم: ${e.toString()}";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   // int selectedIndex = 1;
 
   List<String> customerTabs = [
@@ -39,53 +96,53 @@ class _ShipmentDataScreenToolBarState extends State<ShipmentDataScreenToolBar> {
   String selectedTabLabel = "الشحنات المعلقة";
 
   List<ShipmentCard> onGoingShipments = [
-    ShipmentCard(
-      isNew: false,
-      id: 0,
-      status: ShipmentStatus.ongoing,
-      icon: Icons.local_shipping,
-    ),
+    // ShipmentCard(
+    //   isNew: false,
+    //   id: 0,
+    //   status: ShipmentStatus.ongoing,
+    //   icon: Icons.local_shipping,
+    // ),
   ];
 
   List<ShipmentCard> completedShipments = [
-    ShipmentCard(
-      isOngoing: false,
-      isNew: false,
-      id: 1,
-      status: ShipmentStatus.completed,
-      icon: Icons.check,
-    ),
-    ShipmentCard(
-      isOngoing: false,
-      isNew: false,
-      id: 1,
-      status: ShipmentStatus.completed,
-      icon: Icons.check,
-    ),
+    // ShipmentCard(
+    //   isOngoing: false,
+    //   isNew: false,
+    //   id: 1,
+    //   status: ShipmentStatus.completed,
+    //   icon: Icons.check,
+    // ),
+    // ShipmentCard(
+    //   isOngoing: false,
+    //   isNew: false,
+    //   id: 1,
+    //   status: ShipmentStatus.completed,
+    //   icon: Icons.check,
+    // ),
   ];
 
   List<ShipmentCard> pendingShipments = [
-    ShipmentCard(
-      isOngoing: false,
-      isNew: false,
-      id: 2,
-      status: ShipmentStatus.billUploadNeeded,
-      icon: Icons.warning,
-    ),
-    ShipmentCard(
-      isOngoing: false,
-      isNew: false,
-      id: 2,
-      status: ShipmentStatus.billReviewing,
-      icon: Icons.warning,
-    ),
-    ShipmentCard(
-      isOngoing: false,
-      isNew: false,
-      id: 2,
-      status: ShipmentStatus.waitForTrucks,
-      icon: Icons.warning,
-    ),
+    // ShipmentCard(
+    //   isOngoing: false,
+    //   isNew: false,
+    //   id: 2,
+    //   status: ShipmentStatus.billUploadNeeded,
+    //   icon: Icons.warning,
+    // ),
+    // ShipmentCard(
+    //   isOngoing: false,
+    //   isNew: false,
+    //   id: 2,
+    //   status: ShipmentStatus.billReviewing,
+    //   icon: Icons.warning,
+    // ),
+    // ShipmentCard(
+    //   isOngoing: false,
+    //   isNew: false,
+    //   id: 2,
+    //   status: ShipmentStatus.waitForTrucks,
+    //   icon: Icons.warning,
+    // ),
   ];
   List<ShipmentCard> shipments = [];
   List<ShipmentCard> _getShipmentsForTab(String tab) {
@@ -104,6 +161,7 @@ class _ShipmentDataScreenToolBarState extends State<ShipmentDataScreenToolBar> {
   @override
   void initState() {
     super.initState();
+    getshipments();
 
     if (widget.isTruckOwner) {
       selectedTabLabel = "المقدم عليها";
@@ -284,12 +342,40 @@ class _ShipmentDataScreenToolBarState extends State<ShipmentDataScreenToolBar> {
               SizedBox(height: 10.h),
 
               Expanded(
-                child: ListView.builder(
-                  itemCount: shipments.length,
-                  itemBuilder: (context, index) {
-                    return shipments[index];
-                  },
-                ),
+                child:
+                    selectedTabLabel == "الشحنات المعلقة"
+                        ? ListView.builder(
+                          itemCount: retreivedShipments.length,
+                          itemBuilder: (context, index) {
+                            return ShipmentCard(
+                              date:
+                                  "${retreivedShipments[index].estimatedPickupDate}",
+                              fromCountry:
+                                  retreivedShipments[index].origin.country,
+                              fromCity:
+                                  retreivedShipments[index].origin.address,
+                              toCountry:
+                                  retreivedShipments[index].destination.country,
+                              toCity:
+                                  retreivedShipments[index].destination.address,
+                              shipmentId: retreivedShipments[index].id,
+                              isNew: false,
+                              id: 2,
+                              status: ShipmentStatus.billUploadNeeded,
+                              icon: Icons.warning,
+                            );
+                          },
+                        )
+                        : Center(
+                          child: Text(
+                            "لا يوجد شحنات",
+                            style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontSize: 20,
+                              // fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
               ),
             ],
           ),
