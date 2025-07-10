@@ -1,33 +1,12 @@
-// import 'package:app/features/auth/presentation/done_register.dart';
-// import 'package:app/features/auth/presentation/get_code.dart';
-// import 'package:app/features/auth/presentation/login_screen.dart';
-// import 'package:app/features/auth/presentation/register_screen.dart';
-// import 'package:app/features/auth/presentation/userType.dart';
-// import 'package:app/features/customer/presentation/customerHomePage.dart';
-// import 'package:app/features/auth/presentation/login_screen.dart';
-// import 'package:app/features/customer/presentation/customerHomePage.dart';
-import 'package:app/features/auth/presentation/register_screen.dart';
-import 'package:app/features/customer/presentation/homeWithBottomBar.dart';
-import 'package:app/features/truck_owner_register/presentation/TruckOwnerHomePage.dart';
-import 'package:app/features/truck_owner_register/presentation/TruckOwnerHomeWithBottomBar.dart';
-import 'package:app/features/truck_owner_register/presentation/registerData/selfiesPhoto.dart';
-import 'package:app/features/truck_owner_register/presentation/registerData/welcome.dart';
-import 'package:app/shared/constants/colors.dart';
-// import 'package:app/shared/screens/presentation/Dirver_screen.dart';
-// import 'package:app/shared/screens/presentation/Drivers_tool_bar.dart';
-// import 'package:app/shared/screens/presentation/ShipmentPendingScreen.dart';
-// import 'package:app/shared/screens/presentation/Shipment_Drivers_screen.dart';
-// import 'package:app/shared/screens/presentation/Shipment_completed.dart';
-// import 'package:app/shared/screens/presentation/Shipment_tool_bar.dart';
-// import 'package:app/shared/screens/presentation/Splash_screen.dart';
-// import 'package:app/shared/screens/presentation/contact_us.dart';
-// import 'package:app/shared/screens/presentation/shipment_tracking.dart';
+import 'package:app/presentation/features/auth/login/login_screen.dart';
+import 'package:app/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ProviderScope(child: MyApp()));
   FlutterNativeSplash.remove();
 }
 
@@ -48,7 +27,6 @@ class MyApp extends StatelessWidget {
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(AppColors.primaryColor),
                 foregroundColor: WidgetStatePropertyAll(Colors.white),
-
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10.r)),
@@ -142,9 +120,52 @@ class MyApp extends StatelessWidget {
               ),
             ),
           ),
-          home: RegisterScreen(),
+          home: LoginScreen(),
         );
       },
     );
   }
 }
+
+// class CustomSplashScreen extends StatefulWidget {
+//   const CustomSplashScreen({super.key});
+
+//   @override
+//   State<CustomSplashScreen> createState() => _CustomSplashScreenState();
+// }
+
+// class _CustomSplashScreenState extends State<CustomSplashScreen> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     _navigateToHome();
+//   }
+
+//   _navigateToHome() async {
+//     await Future.delayed(
+//       const Duration(seconds: 3),
+//     ); // Adjust duration as needed
+//     if (!mounted) return;
+//     Navigator.pushReplacement(
+//       context,
+//       MaterialPageRoute(builder: (context) => LoginScreen()),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Container(
+//         width: double.infinity,
+//         height: double.infinity,
+//         decoration: const BoxDecoration(
+//           color: Colors.black, // Match your splash screen background
+//         ),
+//         child: Image.asset(
+//           'assets/images/splash_screen_image.png',
+//           fit: BoxFit.fill,
+//         ),
+//       ),
+//     );
+//   }
+// }

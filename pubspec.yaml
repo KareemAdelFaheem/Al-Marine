@@ -34,12 +34,21 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
   flutter_screenutil: ^5.9.3
   pinput: ^5.0.1
   lucide_icons: ^0.257.0
-  flutter_native_splash: ^2.4.6
   image_picker: ^1.1.2
   permission_handler: ^12.0.0+1
+  font_awesome_flutter: ^10.8.0
+  flutter_svg: ^2.1.0
+  top_snackbar_flutter: ^3.3.0
+  carousel_slider: ^5.0.0
+  flutter_native_splash: ^2.4.6
+  flutter_launcher_icons: ^0.14.3
+  lottie: ^3.3.1
+  device_info_plus: ^9.1.2
+  dio: ^5.8.0+1
 
 
 dev_dependencies:
@@ -71,15 +80,40 @@ flutter:
     - assets/images/main_logo.png
     - assets/images/logoWithBg.png
     - assets/images/truck.png
-    - assets/images/prof.jpg
     - assets/images/truck_grey.png
     - assets/images/SteeringWheel.png
     - assets/images/box.png
     - assets/images/done_mark.png
     - assets/images/Ex_mark.png
     - assets/images/default_truck.png
-    - assets/images/splash_screen.png
+    - assets/images/splash_screen_image.png
+    - assets/images/splash100.png
+    - assets/images/splash200.png
+    - assets/images/splash300.png
+    - assets/images/splash400.png
     - assets/images/selfie.png
+    - assets/images/Steer.svg
+    - assets/images/full_truck.png
+    - assets/images/Carlicense.png
+    - assets/images/Image.svg
+    - assets/images/Carlicense.png
+    - assets/images/Plus.svg
+    - assets/images/passport.png
+    - assets/images/driverlicense.png
+    - assets/images/id1.png
+    - assets/images/id2.png
+    - assets/images/Downloadicon.png
+    - assets/images/theLogo100.png
+    - assets/images/theLogo200.png
+    - assets/images/theLogo300.png
+    - assets/images/theLogo400.png
+    - assets/icons/app_icon.png
+    - assets/images/truck1.jpg
+    - assets/images/truck2.jpg
+    - assets/images/truck3.jpg
+    - assets/animations/truck.json
+
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -97,28 +131,30 @@ flutter:
     - family: tajawal
       fonts:
         - asset: assets/fonts/Tajawal-Medium.ttf
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-VariableFont_slnt,wght.ttf
+  #      
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
 flutter_native_splash:
+  background_image: assets/images/splash400.png
   android: true
   ios: true
-  web: false
-
-  color: "#000000"
-  image: assets/images/splash_screen.png
-  fullscreen: true
-  android_gravity: fill
-  ios_content_mode: fill
 
   android_12:
-    image: assets/images/splash_screen.png
-    color: "#000000"
-    icon_background_color: "#000000"
-    branding: null
+    image: assets/images/theLogo400.png
+    icon_background_color: "#FFFFFF"
+    image_dark: assets/images/theLogo400.png
+    icon_background_color_dark: "#000000"
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  android_adaptive_icon_background: "#ffffff" 
+  remove_alpha_ios: true
+  min_sdk_android: 21
